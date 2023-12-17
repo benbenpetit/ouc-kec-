@@ -21,15 +21,8 @@
     position: absolute;
     gap: 12px;
 
-    &.--row {
-      flex-direction: row;
-    }
-
-    &.--column {
-      flex-direction: column;
-    }
-
     &.--left {
+      flex-direction: row-reverse;
       justify-content: flex-end;
       align-items: center;
       top: 50%;
@@ -38,6 +31,7 @@
     }
 
     &.--right {
+      flex-direction: row;
       justify-content: flex-start;
       align-items: center;
       top: 50%;
@@ -46,6 +40,7 @@
     }
 
     &.--top {
+      flex-direction: column-reverse;
       align-items: flex-end;
       justify-content: center;
       bottom: calc(100% + 12px);
@@ -54,6 +49,7 @@
     }
 
     &.--bottom {
+      flex-direction: column;
       align-items: flex-start;
       justify-content: center;
       top: calc(100% + 12px);

@@ -18,6 +18,12 @@
     border: 1px solid #111;
     border-radius: 4px;
     overflow: hidden;
+    height: 170px;
+    width: 280px;
+
+    .c-card.is-grabbing {
+      background-color: #111;
+    }
 
     &__image {
       position: absolute;
@@ -30,12 +36,6 @@
       height: 100%;
       object-fit: cover;
       pointer-events: none;
-    }
-
-    > .c-front,
-    > .c-back {
-      height: 170px;
-      width: 280px;
     }
   }
 }
