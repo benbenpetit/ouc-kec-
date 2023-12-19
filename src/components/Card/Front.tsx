@@ -9,7 +9,12 @@ interface Props {
 const Front: FC<Props> = ({ name }) => {
   return (
     <div className="c-front">
-      <Image className="c-card__inside__image" src={FrontImg} alt="Ville" />
+      <Image
+        className="c-card__inside__image"
+        src={FrontImg}
+        alt="Ville"
+        draggable={false}
+      />
       <div className="c-front__sign">
         <span>{name}</span>
       </div>

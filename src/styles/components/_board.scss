@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 .c-board {
   position: absolute;
   left: 0;
@@ -14,47 +16,99 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 32px;
+    border-radius: 8px;
+    background-color: rgb(217, 137, 39);
   }
 
   &__direction {
     display: flex;
     position: absolute;
     gap: 12px;
+    background-color: rgba(255, 255, 255, 0.448);
+    border-radius: 8px;
+    padding: 16px;
 
     &.--left {
       flex-direction: row-reverse;
-      justify-content: flex-end;
+      justify-content: flex-start;
       align-items: center;
-      top: 50%;
       right: calc(100% + 12px);
-      transform: translateY(-50%);
+      top: 16px;
+      bottom: 16px;
+      min-width: 400px;
     }
 
     &.--right {
       flex-direction: row;
       justify-content: flex-start;
       align-items: center;
-      top: 50%;
       left: calc(100% + 12px);
-      transform: translateY(-50%);
+      top: 16px;
+      bottom: 16px;
+      min-width: 400px;
     }
 
     &.--top {
       flex-direction: column-reverse;
-      align-items: flex-end;
-      justify-content: center;
+      align-items: center;
+      justify-content: flex-start;
       bottom: calc(100% + 12px);
-      left: 50%;
-      transform: translateX(-50%);
+      left: 16px;
+      right: 16px;
+      min-height: 300px;
     }
 
     &.--bottom {
       flex-direction: column;
-      align-items: flex-start;
-      justify-content: center;
+      align-items: center;
+      justify-content: flex-start;
       top: calc(100% + 12px);
-      left: 50%;
-      transform: translateX(-50%);
+      left: 16px;
+      right: 16px;
+      min-height: 300px;
+    }
+  }
+
+  &__reserve {
+    position: fixed;
+    bottom: 64px;
+    right: 64px;
+
+    &::before {
+      --offset: 64px;
+      content: '';
+      position: absolute;
+      z-index: -1;
+      height: calc(194px + var(--offset));
+      width: calc(304px + var(--offset));
+      right: 0;
+      bottom: 0;
+      border-radius: 16px;
+      background-color: rgb(217, 137, 39);
+      transform-origin: bottom right;
+      transform: translate(calc(var(--offset) / 2), calc(var(--offset) / 2));
+    }
+
+    > .c-selectable-card {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+
+      @for $i from 1 through 15 {
+        &:nth-child(#{$i}) {
+          z-index: 15 - $i;
+        }
+      }
+
+      @for $i from 1 through 15 {
+        &:not(:nth-child(1)):not(:nth-child(2)):nth-last-child(#{$i}) {
+          .c-card {
+            transform: translate(random(3) * 1px, random(3) * 1px)
+              rotate(calc(random(6) - 3) * 1deg);
+          }
+        }
+      }
     }
   }
 }
