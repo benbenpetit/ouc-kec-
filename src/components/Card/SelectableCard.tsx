@@ -1,7 +1,7 @@
 import Card from '@/components/Card/Card'
 import { ICityFull } from '@/core/types/ICity'
 import { useSortable } from '@dnd-kit/sortable'
-import { CSSProperties, FC } from 'react'
+import { CSSProperties, FC, useEffect } from 'react'
 import { CSS } from '@dnd-kit/utilities'
 import clsx from 'clsx'
 
@@ -9,9 +9,15 @@ interface Props {
   city: ICityFull
   disabled?: boolean
   isReserveCard?: boolean
+  scale?: number
 }
 
-const SelectableCard: FC<Props> = ({ city, disabled, isReserveCard }) => {
+const SelectableCard: FC<Props> = ({
+  city,
+  disabled,
+  isReserveCard,
+  scale = 1,
+}) => {
   const {
     setNodeRef,
     attributes,
@@ -30,7 +36,11 @@ const SelectableCard: FC<Props> = ({ city, disabled, isReserveCard }) => {
 
   const style = {
     transition,
-    transform: CSS.Transform.toString(transform),
+    transform: CSS.Transform.toString({
+      ...transform,
+      scaleX: scale,
+      scaleY: scale,
+    } as any),
   }
 
   return (

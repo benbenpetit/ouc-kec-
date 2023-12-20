@@ -32,9 +32,7 @@
       left: 50%;
       top: 50%;
       will-change: transform;
-      transform-origin: 50% 50% 0px;
-      transform: translate(-50%, -50%);
-      transition: transform 0.75s cubic-bezier(0.2, 0, 0, 1);
+      transform-origin: center;
       pointer-events: none;
     }
   }

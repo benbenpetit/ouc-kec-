@@ -38,6 +38,8 @@ const BoardPage = () => {
   const [lerpMousePos, setLerpMousePos] = useState({ x: 0, y: 0 })
   const [dragPos, setDragPos] = useState({ x: 0, y: 0 })
   const [isMouseDown, setIsMouseDown] = useState(false)
+  const [zoom, setZoom] = useState(1)
+  const [lerpZoom, setLerpZoom] = useState(1)
 
   const [round, setRound] = useState(0)
   const [startCity, setStartCity] = useState<ICity | null>(null)
@@ -64,8 +66,8 @@ const BoardPage = () => {
         topOffset: topCards.length * 200,
         rightOffset: rightCards.length * 300,
         bottomOffset: bottomCards.length * 200,
-        width: 400 + (topCards.length + bottomCards.length) * 300,
-        height: 300 + (leftCards.length + rightCards.length) * 200,
+        width: 400 + (leftCards.length + rightCards.length) * 300,
+        height: 300 + (topCards.length + bottomCards.length) * 200,
       }
     }, [placedCards])
 
@@ -162,25 +164,26 @@ const BoardPage = () => {
         y: lerp(lerpMousePos.y, mousePos.y, 0.1),
       })
 
+      setLerpZoom(lerp(lerpZoom, zoom, 0.1))
+
       requestRef.current = requestAnimationFrame(handleRaf)
     }
 
     requestRef.current = requestAnimationFrame(handleRaf)
-
     return () => cancelAnimationFrame(requestRef.current)
-  }, [lerpMousePos, mousePos])
+  }, [lerpMousePos, mousePos, lerpZoom, zoom])
 
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
       const delta = e.deltaY
-
-      console.log(delta)
+      setZoom((prevZoom) =>
+        Math.max(Math.min(1.25, prevZoom - delta * 0.001), 0.6)
+      )
     }
 
     window.addEventListener('wheel', handleWheel)
-
     return () => window.removeEventListener('wheel', handleWheel)
-  }, [])
+  }, [zoom, topOffset, bottomOffset, leftOffset, rightOffset])
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -274,7 +277,11 @@ const BoardPage = () => {
             />
             <div
               className="c-wrapper__drag__wrap"
-              style={{ transform: `translate(-50%, -50%)` }}
+              style={{
+                transform: `translate(-50%, -50%) scale(${lerpZoom.toFixed(
+                  4
+                )})`,
+              }}
             >
               <div
                 className="c-wrapper__inner c-board"
@@ -318,7 +325,9 @@ const BoardPage = () => {
         {isMounted &&
           createPortal(
             <DragOverlay>
-              {activeCard && <SelectableCard city={activeCard} />}
+              {activeCard && (
+                <SelectableCard city={activeCard} scale={lerpZoom} />
+              )}
             </DragOverlay>,
             document.body
           )}
