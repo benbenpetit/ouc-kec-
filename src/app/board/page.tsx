@@ -1,9 +1,11 @@
 'use client'
 
+import Action from '@/components/Actions/Action'
 import Card from '@/components/Card/Card'
 import SelectableCard from '@/components/Card/SelectableCard'
 import Direction from '@/components/Direction'
 import CITIES from '@/core/data/constants/cities'
+import { IAction } from '@/core/types/IAction'
 import { ICity, ICityFull } from '@/core/types/ICity'
 import {
   DndContext,
@@ -19,8 +21,19 @@ import { SortableContext, arrayMove } from '@dnd-kit/sortable'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { v4 as uuid } from 'uuid'
+import DuelActionImg from '@/assets/img/actions/duel.png'
 
 const MAX_ROUNDS = 3
+
+const BASE_ACTIONS: IAction[] = [
+  {
+    id: 'contest',
+    label: 'Contest',
+    img: DuelActionImg,
+    alt: 'Two swords crossed',
+    description: 'Contest a city placement',
+  },
+]
 
 const lerp = (a: number, b: number, t: number) => a * (1 - t) + b * t
 
@@ -70,6 +83,8 @@ const BoardPage = () => {
         height: 300 + (topCards.length + bottomCards.length) * 200,
       }
     }, [placedCards])
+
+  const [actions, setActions] = useState<IAction[]>(BASE_ACTIONS)
 
   useEffect(() => {
     if (round === MAX_ROUNDS) return
@@ -261,6 +276,25 @@ const BoardPage = () => {
     }
   }
 
+  const getIsActionnable = (actionId: string) => {
+    switch (actionId) {
+      case 'contest':
+        return true
+      default:
+        return true
+    }
+  }
+
+  const handleActionClick = (actionId: string) => {
+    switch (actionId) {
+      case 'contest': {
+        console.log('contest')
+      }
+      default:
+        return false
+    }
+  }
+
   return (
     <main>
       <DndContext
@@ -320,8 +354,17 @@ const BoardPage = () => {
               />
             ))}
           </div>
+          <div className="c-actions">
+            {actions.map((action) => (
+              <Action
+                key={action.label}
+                action={action}
+                onClick={() => handleActionClick(action.id)}
+                isDisabled={!getIsActionnable(action.id)}
+              />
+            ))}
+          </div>
         </div>
-
         {isMounted &&
           createPortal(
             <DragOverlay>
