@@ -1,0 +1,41 @@
+.c-wrapper {
+  min-height: 100vh;
+  background-color: rgb(255, 176, 80);
+
+  &__drag {
+    overflow: hidden;
+    backface-visibility: hidden;
+    position: absolute;
+    z-index: 0;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+
+    &__pointer {
+      position: absolute;
+      z-index: 0;
+      display: block;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      cursor: grab;
+
+      &:active {
+        cursor: grabbing;
+      }
+    }
+
+    &__wrap {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      will-change: transform;
+      transform-origin: 50% 50% 0px;
+      transform: translate(-50%, -50%);
+      transition: transform 0.75s cubic-bezier(0.2, 0, 0, 1);
+      pointer-events: none;
+    }
+  }
+}

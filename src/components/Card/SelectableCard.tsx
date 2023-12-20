@@ -1,10 +1,9 @@
 import Card from '@/components/Card/Card'
 import { ICityFull } from '@/core/types/ICity'
 import { useSortable } from '@dnd-kit/sortable'
-import { FC } from 'react'
+import { CSSProperties, FC } from 'react'
 import { CSS } from '@dnd-kit/utilities'
 import clsx from 'clsx'
-import { SortableTransition } from '@dnd-kit/sortable/dist/hooks/types'
 
 interface Props {
   city: ICityFull

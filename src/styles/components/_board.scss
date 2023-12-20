@@ -1,12 +1,6 @@
 @use 'sass:math';
 
 .c-board {
-  position: absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgb(255, 176, 80);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -19,6 +13,7 @@
     padding: 32px;
     border-radius: 8px;
     background-color: rgb(217, 137, 39);
+    pointer-events: auto;
   }
 
   &__direction {
@@ -37,6 +32,7 @@
       top: 16px;
       bottom: 16px;
       min-width: 400px;
+      padding-left: 64px;
     }
 
     &.--right {
@@ -47,6 +43,7 @@
       top: 16px;
       bottom: 16px;
       min-width: 400px;
+      padding-right: 64px;
     }
 
     &.--top {
@@ -57,6 +54,7 @@
       left: 16px;
       right: 16px;
       min-height: 300px;
+      padding-top: 64px;
     }
 
     &.--bottom {
@@ -67,46 +65,56 @@
       left: 16px;
       right: 16px;
       min-height: 300px;
+      padding-bottom: 64px;
+    }
+
+    .c-card {
+      box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
     }
   }
+}
 
-  &__reserve {
-    position: fixed;
-    bottom: 64px;
-    right: 64px;
+.c-reserve {
+  position: fixed;
+  bottom: 64px;
+  right: 64px;
+  pointer-events: auto;
 
-    &::before {
-      --offset: 64px;
-      content: '';
-      position: absolute;
-      z-index: -1;
-      height: calc(194px + var(--offset));
-      width: calc(304px + var(--offset));
-      right: 0;
-      bottom: 0;
-      border-radius: 16px;
-      background-color: rgb(217, 137, 39);
-      transform-origin: bottom right;
-      transform: translate(calc(var(--offset) / 2), calc(var(--offset) / 2));
+  &::before {
+    --offset: 64px;
+    content: '';
+    position: absolute;
+    z-index: -1;
+    height: calc(194px + var(--offset));
+    width: calc(304px + var(--offset));
+    right: 0;
+    bottom: 0;
+    border-radius: 16px;
+    background-color: rgb(217, 137, 39);
+    transform-origin: bottom right;
+    transform: translate(calc(var(--offset) / 2), calc(var(--offset) / 2));
+  }
+
+  .c-card {
+    box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  > .c-selectable-card {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+
+    @for $i from 1 through 15 {
+      &:nth-child(#{$i}) {
+        z-index: 15 - $i;
+      }
     }
 
-    > .c-selectable-card {
-      position: absolute;
-      right: 0;
-      bottom: 0;
-
-      @for $i from 1 through 15 {
-        &:nth-child(#{$i}) {
-          z-index: 15 - $i;
-        }
-      }
-
-      @for $i from 1 through 15 {
-        &:not(:nth-child(1)):not(:nth-child(2)):nth-last-child(#{$i}) {
-          .c-card {
-            transform: translate(random(3) * 1px, random(3) * 1px)
-              rotate(calc(random(6) - 3) * 1deg);
-          }
+    @for $i from 1 through 15 {
+      &:not(:nth-child(1)):not(:nth-child(2)):nth-last-child(#{$i}) {
+        .c-card {
+          transform: translate(random(3) * 1px, random(3) * 1px)
+            rotate(calc(random(6) - 3) * 1deg);
         }
       }
     }

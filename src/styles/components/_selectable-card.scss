@@ -2,9 +2,5 @@
   &.--is-dragging {
     filter: saturate(0) grayscale(1);
     opacity: 0.6;
-
-    > * {
-      box-shadow: none;
-    }
   }
 }

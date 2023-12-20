@@ -3,7 +3,6 @@
   border-radius: 8px;
   padding: 12px;
   background-color: #f6f6f6;
-  box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
 
   * {
     -webkit-touch-callout: none;
@@ -62,6 +61,7 @@
       line-height: 1.25;
       text-align: center;
       display: block;
+      text-transform: uppercase;
     }
 
     &::before {

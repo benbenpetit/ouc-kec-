@@ -16,19 +16,34 @@ import {
   useSensors,
 } from '@dnd-kit/core'
 import { SortableContext, arrayMove } from '@dnd-kit/sortable'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { v4 as uuid } from 'uuid'
 
 const MAX_ROUNDS = 3
 
+const lerp = (a: number, b: number, t: number) => a * (1 - t) + b * t
+
 const BoardPage = () => {
+  const [isMounted, setIsMounted] = useState(false)
+
+  const [windowDimensions, setWindowDimensions] = useState({
+    width: 1920,
+    height: 1080,
+  })
+  const requestRef = useRef(0)
+  const [basePos, setBasePos] = useState({ x: 0, y: 0 })
+  const [offsetCursorPos, setOffsetCursorPos] = useState({ x: 0, y: 0 })
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+  const [lerpMousePos, setLerpMousePos] = useState({ x: 0, y: 0 })
+  const [dragPos, setDragPos] = useState({ x: 0, y: 0 })
+  const [isMouseDown, setIsMouseDown] = useState(false)
+
   const [round, setRound] = useState(0)
   const [startCity, setStartCity] = useState<ICity | null>(null)
   const [deck, setDeck] = useState<ICityFull[][]>([[]])
   const [reserveCards, setReserveCards] = useState<ICityFull[]>([])
   const [placedCards, setPlacedCards] = useState<ICityFull[]>([])
-
   const [directions, setDirections] = useState<
     ('left' | 'right' | 'top' | 'bottom')[]
   >(['left', 'right', 'top', 'bottom'])
@@ -36,8 +51,23 @@ const BoardPage = () => {
     () => directions.map((direction) => direction),
     [directions]
   )
-
   const [activeCard, setActiveCard] = useState<ICityFull | null>(null)
+  const { leftOffset, topOffset, rightOffset, bottomOffset, width, height } =
+    useMemo(() => {
+      const leftCards = placedCards.filter((c) => c.direction === 'left')
+      const topCards = placedCards.filter((c) => c.direction === 'top')
+      const rightCards = placedCards.filter((c) => c.direction === 'right')
+      const bottomCards = placedCards.filter((c) => c.direction === 'bottom')
+
+      return {
+        leftOffset: leftCards.length * 300,
+        topOffset: topCards.length * 200,
+        rightOffset: rightCards.length * 300,
+        bottomOffset: bottomCards.length * 200,
+        width: 400 + (topCards.length + bottomCards.length) * 300,
+        height: 300 + (leftCards.length + rightCards.length) * 200,
+      }
+    }, [placedCards])
 
   useEffect(() => {
     if (round === MAX_ROUNDS) return
@@ -59,6 +89,97 @@ const BoardPage = () => {
       shuffledCities.slice(30, 45),
     ])
     setStartCity(shuffledCities[45])
+    setIsMounted(true)
+  }, [])
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      })
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    const { clientX, clientY } = e
+    setOffsetCursorPos({ x: clientX, y: clientY })
+    setBasePos(dragPos)
+    setIsMouseDown(true)
+  }
+
+  useEffect(() => {
+    const handleMouseUp = () => {
+      setIsMouseDown(false)
+    }
+
+    window.addEventListener('mouseup', handleMouseUp)
+    return () => {
+      window.removeEventListener('mouseup', handleMouseUp)
+    }
+  }, [dragPos])
+
+  useEffect(() => {
+    setMousePos(({ x: prevX, y: prevY }) => ({
+      x: Math.min(Math.max(-rightOffset, prevX), leftOffset),
+      y: Math.min(Math.max(-bottomOffset, prevY), topOffset),
+    }))
+  }, [windowDimensions])
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (isMouseDown) {
+      const newPos = {
+        x: basePos.x + e.clientX - offsetCursorPos.x,
+        y: basePos.y + e.clientY - offsetCursorPos.y,
+      }
+
+      setMousePos({
+        x: Math.min(Math.max(-rightOffset, newPos.x), leftOffset),
+        y: Math.min(Math.max(-bottomOffset, newPos.y), topOffset),
+      })
+    }
+  }
+
+  useEffect(() => {
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => window.removeEventListener('mousemove', handleMouseMove)
+  }, [isMouseDown, offsetCursorPos, basePos, windowDimensions])
+
+  useEffect(() => {
+    setDragPos({
+      x: lerpMousePos.x,
+      y: lerpMousePos.y,
+    })
+  }, [lerpMousePos])
+
+  useEffect(() => {
+    const handleRaf = () => {
+      setLerpMousePos({
+        x: lerp(lerpMousePos.x, mousePos.x, 0.1),
+        y: lerp(lerpMousePos.y, mousePos.y, 0.1),
+      })
+
+      requestRef.current = requestAnimationFrame(handleRaf)
+    }
+
+    requestRef.current = requestAnimationFrame(handleRaf)
+
+    return () => cancelAnimationFrame(requestRef.current)
+  }, [lerpMousePos, mousePos])
+
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      const delta = e.deltaY
+
+      console.log(delta)
+    }
+
+    window.addEventListener('wheel', handleWheel)
+
+    return () => window.removeEventListener('wheel', handleWheel)
   }, [])
 
   const sensors = useSensors(
@@ -145,24 +266,44 @@ const BoardPage = () => {
         onDragEnd={onDragEnd}
         onDragOver={onDragOver}
       >
-        <div className="c-board">
-          <div className="c-board__center">
-            <div className="c-board__center__card">
-              {startCity && <Card city={startCity} />}
+        <div className="c-wrapper">
+          <div className="c-wrapper__drag">
+            <span
+              className="c-wrapper__drag__pointer"
+              onMouseDown={handleMouseDown}
+            />
+            <div
+              className="c-wrapper__drag__wrap"
+              style={{ transform: `translate(-50%, -50%)` }}
+            >
+              <div
+                className="c-wrapper__inner c-board"
+                style={{
+                  transform: `translate3d(${dragPos.x}px, ${dragPos.y}px, 0px)`,
+                  width: `${width}px`,
+                  height: `${height}px`,
+                }}
+              >
+                <div className="c-board__center">
+                  <div className="c-board__center__card">
+                    {startCity && <Card city={startCity} />}
+                  </div>
+                  <SortableContext items={directionsIds}>
+                    {directions.map((direction) => (
+                      <Direction
+                        key={direction}
+                        direction={direction}
+                        cities={placedCards.filter(
+                          (city) => city.direction === direction
+                        )}
+                      />
+                    ))}
+                  </SortableContext>
+                </div>
+              </div>
             </div>
-            <SortableContext items={directionsIds}>
-              {directions.map((direction) => (
-                <Direction
-                  key={direction}
-                  direction={direction}
-                  cities={placedCards.filter(
-                    (city) => city.direction === direction
-                  )}
-                />
-              ))}
-            </SortableContext>
           </div>
-          <div className="c-board__reserve">
+          <div className="c-reserve">
             {reserveCards.map((city, index) => (
               <SelectableCard
                 key={index}
@@ -173,12 +314,14 @@ const BoardPage = () => {
             ))}
           </div>
         </div>
-        {createPortal(
-          <DragOverlay>
-            {activeCard && <SelectableCard city={activeCard} />}
-          </DragOverlay>,
-          document.body
-        )}
+
+        {isMounted &&
+          createPortal(
+            <DragOverlay>
+              {activeCard && <SelectableCard city={activeCard} />}
+            </DragOverlay>,
+            document.body
+          )}
       </DndContext>
     </main>
   )
