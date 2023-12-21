@@ -4,6 +4,9 @@
   right: calc(32px + 304px + 64px + 32px);
   pointer-events: auto;
   padding: 22px 42px;
+  display: flex;
+  align-items: center;
+  column-gap: 24px;
 
   &::before {
     content: '';
@@ -23,6 +26,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  row-gap: 6px;
 
   &.--disabled {
     cursor: not-allowed;
@@ -33,6 +37,9 @@
   }
 
   img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
     filter: invert(75%) sepia(87%) saturate(359%) hue-rotate(72deg)
       brightness(102%) contrast(103%);
   }
@@ -42,6 +49,5 @@
     font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
   }
 }

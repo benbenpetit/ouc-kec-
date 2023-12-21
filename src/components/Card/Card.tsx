@@ -7,11 +7,10 @@ import { ICity } from '@/core/types/ICity'
 
 interface Props {
   city: ICity
+  isFlipped?: boolean
 }
 
-const Card: FC<Props> = ({ city }) => {
-  const [isFlipped, setIsFlipped] = useState(false)
-
+const Card: FC<Props> = ({ city, isFlipped }) => {
   return (
     <div className="c-card">
       <div className="c-card__inside">

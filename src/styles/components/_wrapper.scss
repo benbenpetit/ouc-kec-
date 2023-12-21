@@ -21,10 +21,6 @@
       right: 0;
       bottom: 0;
       cursor: grab;
-
-      &:active {
-        cursor: grabbing;
-      }
     }
 
     &__wrap {

@@ -22,10 +22,21 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { v4 as uuid } from 'uuid'
 import DuelActionImg from '@/assets/img/actions/duel.png'
+import FinishImg from '@/assets/img/actions/finish.png'
+import clsx from 'clsx'
+import Contest from '@/components/Contest/Contest'
+import { AnimatePresence } from 'framer-motion'
 
 const MAX_ROUNDS = 3
 
 const BASE_ACTIONS: IAction[] = [
+  {
+    id: 'end-round',
+    label: 'End Round',
+    img: FinishImg,
+    alt: 'Finish line',
+    description: 'End round and estimate errors',
+  },
   {
     id: 'contest',
     label: 'Contest',
@@ -55,6 +66,7 @@ const BoardPage = () => {
   const [lerpZoom, setLerpZoom] = useState(1)
 
   const [round, setRound] = useState(0)
+  const [isContest, setIsContest] = useState(false)
   const [startCity, setStartCity] = useState<ICity | null>(null)
   const [deck, setDeck] = useState<ICityFull[][]>([[]])
   const [reserveCards, setReserveCards] = useState<ICityFull[]>([])
@@ -175,8 +187,8 @@ const BoardPage = () => {
   useEffect(() => {
     const handleRaf = () => {
       setLerpMousePos({
-        x: lerp(lerpMousePos.x, mousePos.x, 0.1),
-        y: lerp(lerpMousePos.y, mousePos.y, 0.1),
+        x: lerp(lerpMousePos.x, mousePos.x, 0.15),
+        y: lerp(lerpMousePos.y, mousePos.y, 0.15),
       })
 
       setLerpZoom(lerp(lerpZoom, zoom, 0.1))
@@ -190,10 +202,12 @@ const BoardPage = () => {
 
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
-      const delta = e.deltaY
-      setZoom((prevZoom) =>
-        Math.max(Math.min(1.25, prevZoom - delta * 0.001), 0.6)
-      )
+      if (!isContest) {
+        const delta = e.deltaY
+        setZoom((prevZoom) =>
+          Math.max(Math.min(1.25, prevZoom - delta * 0.001), 0.6)
+        )
+      }
     }
 
     window.addEventListener('wheel', handleWheel)
@@ -279,7 +293,9 @@ const BoardPage = () => {
   const getIsActionnable = (actionId: string) => {
     switch (actionId) {
       case 'contest':
-        return true
+        return placedCards.filter((c) => c.direction).length > 1
+      case 'end-round':
+        return reserveCards.length === 0
       default:
         return true
     }
@@ -288,7 +304,10 @@ const BoardPage = () => {
   const handleActionClick = (actionId: string) => {
     switch (actionId) {
       case 'contest': {
-        console.log('contest')
+        setIsContest(true)
+      }
+      case 'end-round': {
+        setRound((round) => round + 1)
       }
       default:
         return false
@@ -296,7 +315,7 @@ const BoardPage = () => {
   }
 
   return (
-    <main>
+    <main className={clsx(isMouseDown && '--is-grabbing')}>
       <DndContext
         sensors={sensors}
         onDragStart={onDragStart}
@@ -365,15 +384,26 @@ const BoardPage = () => {
             ))}
           </div>
         </div>
-        {isMounted &&
-          createPortal(
-            <DragOverlay>
-              {activeCard && (
-                <SelectableCard city={activeCard} scale={lerpZoom} />
-              )}
-            </DragOverlay>,
-            document.body
-          )}
+        {isMounted && (
+          <>
+            {createPortal(
+              <DragOverlay>
+                {activeCard && (
+                  <SelectableCard city={activeCard} scale={lerpZoom} />
+                )}
+              </DragOverlay>,
+              document.body
+            )}
+            {createPortal(
+              <AnimatePresence>
+                {isContest && (
+                  <Contest cities={[placedCards[0], placedCards[1]]} />
+                )}
+              </AnimatePresence>,
+              document.body
+            )}
+          </>
+        )}
       </DndContext>
     </main>
   )

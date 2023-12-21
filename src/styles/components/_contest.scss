@@ -1,0 +1,62 @@
+.c-contest {
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &__backdrop {
+    position: absolute;
+    z-index: 0;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+  }
+
+  &__inner {
+    position: relative;
+    z-index: 1;
+    // display: flex;
+    // align-items: center;
+    // justify-content: center;
+    // flex-wrap: wrap;
+    // gap: 16px;
+    aspect-ratio: 280/170;
+    width: 100%;
+    max-height: 90vh;
+    max-width: 1200px;
+  }
+}
+
+.c-contest-map {
+  border-radius: 12px;
+  background: #8dd0ff;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    height: 100%;
+    width: 100%;
+  }
+
+  path {
+    outline: none;
+  }
+
+  text {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.5;
+    fill: #ff1b67;
+    text-transform: uppercase;
+  }
+}

@@ -14,12 +14,15 @@
   }
 
   &__inside {
+    --ratio: 280/170;
+    --width: 280px;
     position: relative;
     border: 2px solid #111;
     border-radius: 4px;
     overflow: hidden;
-    height: 170px;
-    width: 280px;
+    aspect-ratio: var(--ratio);
+    height: auto;
+    width: var(--width);
 
     .c-card.is-grabbing {
       background-color: #111;

@@ -15,6 +15,7 @@
     "@types/react-simple-maps": "^3.0.4",
     "@types/uuid": "^9.0.7",
     "clsx": "^2.0.0",
+    "framer-motion": "^10.16.16",
     "next": "14.0.4",
     "prop-types": "^15.8.1",
     "react": "^18",

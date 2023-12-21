@@ -26,7 +26,7 @@ const Back: FC<Props> = ({ lat, lng, population, country }) => {
           }
         </Geographies>
         <Marker coordinates={[lng, lat]}>
-          <circle cx={0} cy={0} r={6} fill="#f00" />
+          <circle cx={0} cy={0} r={4} fill="#f00" />
         </Marker>
       </ComposableMap>
     </div>
