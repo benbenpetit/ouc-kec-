@@ -14,7 +14,7 @@
     right: 0;
     bottom: 0;
     border-radius: 16px;
-    background-color: rgb(217, 137, 39);
+    background-color: rgba(217, 137, 39, 0.9);
     transform-origin: bottom right;
     transform: translate(calc(var(--offset) / 2), calc(var(--offset) / 2));
   }

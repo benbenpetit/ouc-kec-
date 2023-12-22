@@ -66,7 +66,6 @@ const BoardPage = () => {
   const [lerpZoom, setLerpZoom] = useState(1)
 
   const [round, setRound] = useState(0)
-  const [isContest, setIsContest] = useState(false)
   const [startCity, setStartCity] = useState<ICity | null>(null)
   const [deck, setDeck] = useState<ICityFull[][]>([[]])
   const [reserveCards, setReserveCards] = useState<ICityFull[]>([])
@@ -97,6 +96,11 @@ const BoardPage = () => {
     }, [placedCards])
 
   const [actions, setActions] = useState<IAction[]>(BASE_ACTIONS)
+  const [isContesting, setIsContesting] = useState(false)
+  const [isContestModal, setIsContestModal] = useState(false)
+  const [lastPlacedCard, setLastPlacedCard] = useState<ICityFull | null>(null)
+  const [contestedCard, setContestedCard] = useState<ICityFull | null>(null)
+  const [isContestValid, setIsContestValid] = useState(false)
 
   useEffect(() => {
     if (round === MAX_ROUNDS) return
@@ -202,7 +206,7 @@ const BoardPage = () => {
 
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
-      if (!isContest) {
+      if (!isContestModal) {
         const delta = e.deltaY
         setZoom((prevZoom) =>
           Math.max(Math.min(1.25, prevZoom - delta * 0.001), 0.6)
@@ -269,8 +273,8 @@ const BoardPage = () => {
     const isOverACard = overType === 'Card'
     if (!isActiveACard) return
     if (isActiveACard && isOverACard) {
+      const activeIndex = placedCards.findIndex((c) => c.id === activeId)
       setPlacedCards((cards) => {
-        const activeIndex = cards.findIndex((c) => c.id === activeId)
         const overIndex = cards.findIndex((c) => c.id === overId)
         if (cards[activeIndex].direction != cards[overIndex].direction) {
           cards[activeIndex].direction = cards[overIndex].direction
@@ -278,22 +282,74 @@ const BoardPage = () => {
         }
         return arrayMove(cards, activeIndex, overIndex)
       })
+      setLastPlacedCard(placedCards[activeIndex])
     }
 
     const isOverADirection = overType === 'Direction'
     if (isActiveACard && isOverADirection) {
+      const activeIndex = placedCards.findIndex((c) => c.id === activeId)
       setPlacedCards((cards) => {
-        const activeIndex = cards.findIndex((c) => c.id === activeId)
         cards[activeIndex].direction = overId as any
         return arrayMove(cards, activeIndex, activeIndex)
       })
+      setLastPlacedCard(placedCards[activeIndex])
+    }
+  }
+
+  const handleEndRound = () => {
+    // console.log(placedCards)
+  }
+
+  const handleContestClick = (incCard: ICityFull) => {
+    if (isContesting) {
+      setIsContestModal(true)
+      setContestedCard(incCard)
+
+      const axis =
+        lastPlacedCard?.direction === 'left' ||
+        lastPlacedCard?.direction === 'right'
+          ? 'x'
+          : 'y'
+
+      const sortedCards = [
+        ...placedCards.filter((c) => c.direction === 'left'),
+        ...placedCards.filter((c) => c.direction === 'right'),
+        ...placedCards.filter((c) => c.direction === 'top'),
+        ...placedCards.filter((c) => c.direction === 'bottom'),
+      ]
+
+      const sortedContest = sortedCards.filter(
+        (c) => c.id === lastPlacedCard?.id || c.id === incCard?.id
+      )
+
+      const isInOrder =
+        axis === 'x'
+          ? sortedContest[0].lng < sortedContest[1].lng
+          : sortedContest[0].lat > sortedContest[1].lat
+
+      setIsContestValid(!isInOrder)
+    }
+  }
+
+  const handleContest = () => {
+    if (isContesting) {
+      setIsContesting(false)
+    } else {
+      setIsContesting(true)
     }
   }
 
   const getIsActionnable = (actionId: string) => {
     switch (actionId) {
       case 'contest':
-        return placedCards.filter((c) => c.direction).length > 1
+        return (
+          placedCards.filter((c) => c?.direction === 'left').length +
+            placedCards.filter((c) => c?.direction === 'right').length >=
+            2 ||
+          placedCards.filter((c) => c?.direction === 'top').length +
+            placedCards.filter((c) => c?.direction === 'bottom').length >=
+            2
+        )
       case 'end-round':
         return reserveCards.length === 0
       default:
@@ -304,10 +360,10 @@ const BoardPage = () => {
   const handleActionClick = (actionId: string) => {
     switch (actionId) {
       case 'contest': {
-        setIsContest(true)
+        handleContest()
       }
       case 'end-round': {
-        setRound((round) => round + 1)
+        handleEndRound()
       }
       default:
         return false
@@ -356,6 +412,21 @@ const BoardPage = () => {
                         cities={placedCards.filter(
                           (city) => city.direction === direction
                         )}
+                        onClickCard={(card) => handleContestClick(card)}
+                        clickableCards={
+                          isContesting
+                            ? placedCards.filter(
+                                (c) =>
+                                  c.id !== lastPlacedCard?.id &&
+                                  (lastPlacedCard?.direction === 'left' ||
+                                  lastPlacedCard?.direction === 'right'
+                                    ? c.direction === 'left' ||
+                                      c.direction === 'right'
+                                    : c.direction === 'top' ||
+                                      c.direction === 'bottom')
+                              )
+                            : []
+                        }
                       />
                     ))}
                   </SortableContext>
@@ -368,7 +439,9 @@ const BoardPage = () => {
               <SelectableCard
                 key={index}
                 city={city}
-                disabled={reserveCards.length > 1 && index !== 0}
+                disabled={
+                  isContesting || (reserveCards.length > 1 && index !== 0)
+                }
                 isReserveCard
               />
             ))}
@@ -396,8 +469,16 @@ const BoardPage = () => {
             )}
             {createPortal(
               <AnimatePresence>
-                {isContest && (
-                  <Contest cities={[placedCards[0], placedCards[1]]} />
+                {isContestModal && lastPlacedCard && contestedCard && (
+                  <Contest
+                    cities={[lastPlacedCard, contestedCard]}
+                    isContestValid={isContestValid}
+                    onClick={() => {
+                      setIsContestModal(false)
+                      setIsContesting(false)
+                      setContestedCard(null)
+                    }}
+                  />
                 )}
               </AnimatePresence>,
               document.body

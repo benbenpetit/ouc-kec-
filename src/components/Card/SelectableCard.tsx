@@ -10,6 +10,8 @@ interface Props {
   disabled?: boolean
   isReserveCard?: boolean
   scale?: number
+  isContestable?: boolean
+  onClick?: () => void
 }
 
 const SelectableCard: FC<Props> = ({
@@ -17,6 +19,8 @@ const SelectableCard: FC<Props> = ({
   disabled,
   isReserveCard,
   scale = 1,
+  isContestable,
+  onClick,
 }) => {
   const {
     setNodeRef,
@@ -47,10 +51,12 @@ const SelectableCard: FC<Props> = ({
     <div
       className={clsx(
         'c-selectable-card',
-        isDragging && !isReserveCard && '--is-dragging'
+        isDragging && !isReserveCard && '--is-dragging',
+        isContestable && '--is-contestable'
       )}
       ref={setNodeRef}
       style={style}
+      onClick={onClick}
       {...attributes}
       {...listeners}
     >

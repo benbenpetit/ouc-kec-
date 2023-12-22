@@ -3,4 +3,30 @@
     filter: saturate(0) grayscale(1);
     opacity: 0.6;
   }
+
+  &.--is-contestable {
+    cursor: pointer;
+
+    .c-card {
+      animation: scaleBounce 0.35s cubic-bezier(0.4, 0, 0, 1) normal;
+      transition: transform 0.175s cubic-bezier(0.4, 0, 0, 1);
+      background-color: rgb(255, 69, 69);
+
+      &:hover {
+        transform: scale(1.03);
+      }
+    }
+  }
+}
+
+@keyframes scaleBounce {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
 }

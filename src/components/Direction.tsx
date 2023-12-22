@@ -6,10 +6,21 @@ import React, { FC, useMemo } from 'react'
 interface Props {
   direction: 'left' | 'right' | 'top' | 'bottom'
   cities: ICityFull[]
+  onClickCard: (city: ICityFull) => void
+  clickableCards?: ICityFull[]
 }
 
-const Direction: FC<Props> = ({ direction, cities }) => {
+const Direction: FC<Props> = ({
+  direction,
+  cities,
+  onClickCard,
+  clickableCards,
+}) => {
   const cardsIds = useMemo(() => cities.map((city) => city.id), [cities])
+
+  const isClickable = (city: ICityFull) => {
+    return clickableCards?.some((clickableCity) => clickableCity.id === city.id)
+  }
 
   const { setNodeRef, attributes } = useSortable({
     id: direction,
@@ -20,6 +31,13 @@ const Direction: FC<Props> = ({ direction, cities }) => {
     },
   })
 
+  const COMPASS_LETTERS = {
+    left: 'W',
+    right: 'E',
+    top: 'N',
+    bottom: 'S',
+  }
+
   return (
     <div
       ref={setNodeRef}
@@ -28,9 +46,17 @@ const Direction: FC<Props> = ({ direction, cities }) => {
     >
       <SortableContext items={cardsIds}>
         {cities.map((city, index) => (
-          <SelectableCard key={city.id} city={city} />
+          <SelectableCard
+            key={city.id}
+            city={city}
+            isContestable={isClickable(city)}
+            onClick={() => isClickable(city) && onClickCard(city)}
+          />
         ))}
       </SortableContext>
+      <div className="c-board__direction__letter">
+        <span>{COMPASS_LETTERS[direction]}</span>
+      </div>
     </div>
   )
 }

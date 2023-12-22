@@ -31,8 +31,16 @@
       right: calc(100% + 12px);
       top: 16px;
       bottom: 16px;
-      min-width: 400px;
+      min-width: 384px;
       padding-left: 64px;
+
+      .c-board__direction__letter {
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 48px;
+        border-radius: 8px 0 0px 8px;
+      }
     }
 
     &.--right {
@@ -42,8 +50,16 @@
       left: calc(100% + 12px);
       top: 16px;
       bottom: 16px;
-      min-width: 400px;
+      min-width: 384px;
       padding-right: 64px;
+
+      .c-board__direction__letter {
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 48px;
+        border-radius: 0 8px 8px 0;
+      }
     }
 
     &.--top {
@@ -53,8 +69,16 @@
       bottom: calc(100% + 12px);
       left: 16px;
       right: 16px;
-      min-height: 300px;
+      min-height: 274px;
       padding-top: 64px;
+
+      .c-board__direction__letter {
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 48px;
+        border-radius: 8px 8px 0 0;
+      }
     }
 
     &.--bottom {
@@ -64,12 +88,35 @@
       top: calc(100% + 12px);
       left: 16px;
       right: 16px;
-      min-height: 300px;
+      min-height: 274px;
       padding-bottom: 64px;
+
+      .c-board__direction__letter {
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 48px;
+        border-radius: 0 0 8px 8px;
+      }
     }
 
     .c-card {
       box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    &__letter {
+      z-index: 9;
+      position: absolute;
+      background-color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      span {
+        font-weight: 700;
+        color: rgb(255, 140, 0);
+        font-size: 20px;
+      }
     }
   }
 }
