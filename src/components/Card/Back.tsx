@@ -6,15 +6,13 @@ import {
   Marker,
 } from 'react-simple-maps'
 import MAP from '@/core/data/constants/map'
+import { ICityFull } from '@/core/types/ICity'
 
 interface Props {
-  lat: number
-  lng: number
-  population: number
-  country: string
+  city: ICityFull
 }
 
-const Back: FC<Props> = ({ lat, lng, population, country }) => {
+const Back: FC<Props> = ({ city }) => {
   return (
     <div className="c-back">
       <ComposableMap width={1000}>
@@ -25,10 +23,22 @@ const Back: FC<Props> = ({ lat, lng, population, country }) => {
             ))
           }
         </Geographies>
-        <Marker coordinates={[lng, lat]}>
-          <circle cx={0} cy={0} r={4} fill="#f00" />
+        <Marker coordinates={[city.lng, city.lat]}>
+          <circle cx={0} cy={0} r={6} fill="#f00" />
         </Marker>
       </ComposableMap>
+      <div className="c-back__name">
+        <span>
+          {city.name} - {city.country}
+        </span>
+      </div>
+      <div className="c-back__coordinates">
+        {city.direction === 'left' || city.direction === 'right' ? (
+          <span>Lat : {city.lat}</span>
+        ) : (
+          <span>Lng : {city.lng}</span>
+        )}
+      </div>
     </div>
   )
 }

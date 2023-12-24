@@ -26,6 +26,7 @@ import FinishImg from '@/assets/img/actions/finish.png'
 import clsx from 'clsx'
 import Contest from '@/components/Contest/Contest'
 import { AnimatePresence } from 'framer-motion'
+import EndRound from '@/components/EndRound/EndRound'
 
 const MAX_ROUNDS = 3
 
@@ -101,6 +102,8 @@ const BoardPage = () => {
   const [lastPlacedCard, setLastPlacedCard] = useState<ICityFull | null>(null)
   const [contestedCard, setContestedCard] = useState<ICityFull | null>(null)
   const [isContestValid, setIsContestValid] = useState(false)
+  const [isEndRoundModal, setIsEndRoundModal] = useState(false)
+  const [invalidCities, setInvalidCities] = useState(0)
 
   useEffect(() => {
     if (round === MAX_ROUNDS) return
@@ -241,7 +244,6 @@ const BoardPage = () => {
             c.id === card.id ? c : { ...c, isStatic: true }
           )
         )
-        console.log('allo')
       }
     }
   }
@@ -302,7 +304,28 @@ const BoardPage = () => {
   }
 
   const handleEndRound = () => {
-    // console.log(placedCards)
+    setIsEndRoundModal(true)
+    const sortedCards = [
+      ...placedCards.filter((c) => c.direction === 'left'),
+      ...placedCards.filter((c) => c.direction === 'right'),
+      ...placedCards.filter((c) => c.direction === 'top'),
+      ...placedCards.filter((c) => c.direction === 'bottom'),
+    ]
+
+    const invalidCities = sortedCards.reduce((acc, card, index) => {
+      const nextCard = sortedCards[index + 1]
+      if (!nextCard) return acc
+
+      const axis =
+        card.direction === 'left' || card.direction === 'right' ? 'x' : 'y'
+      const isInOrder =
+        axis === 'x' ? card.lng < nextCard.lng : card.lat > nextCard.lat
+
+      return isInOrder ? acc + 1 : acc
+    }, 0)
+
+    setInvalidCities(invalidCities)
+    setPlacedCards((cards) => cards.map((c) => ({ ...c, isFlipped: true })))
   }
 
   const handleContestClick = (incCard: ICityFull) => {
@@ -482,6 +505,19 @@ const BoardPage = () => {
                       setIsContestModal(false)
                       setIsContesting(false)
                       setContestedCard(null)
+                    }}
+                  />
+                )}
+              </AnimatePresence>,
+              document.body
+            )}
+            {createPortal(
+              <AnimatePresence>
+                {isEndRoundModal && (
+                  <EndRound
+                    invalidCities={invalidCities}
+                    onClick={() => {
+                      setIsEndRoundModal(false)
                     }}
                   />
                 )}

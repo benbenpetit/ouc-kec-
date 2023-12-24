@@ -60,7 +60,7 @@ const SelectableCard: FC<Props> = ({
       {...attributes}
       {...listeners}
     >
-      <Card city={city} />
+      <Card fullCity={city} isFlipped={city.isFlipped} />
     </div>
   )
 }
