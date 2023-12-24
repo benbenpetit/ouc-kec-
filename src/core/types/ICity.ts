@@ -9,4 +9,5 @@ export interface ICity {
 export interface ICityFull extends ICity {
   id: string
   direction?: 'left' | 'right' | 'top' | 'bottom'
+  isStatic?: boolean
 }

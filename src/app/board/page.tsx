@@ -231,12 +231,17 @@ const BoardPage = () => {
 
     const type = event.active.data.current?.type
     if (type === 'Card' || type === 'Card__Reserve') {
-      const card = event.active.data.current?.card
+      const card = event.active.data.current?.card as ICityFull
       setActiveCard(card)
 
       // Add Card to placedCards if it's not already there (when dragging from reserve)
       if (!placedCards.find((placedCard) => placedCard.id === card.id)) {
-        setPlacedCards((cards) => [...cards, card])
+        setPlacedCards((cards) =>
+          [...cards, card].map((c) =>
+            c.id === card.id ? c : { ...c, isStatic: true }
+          )
+        )
+        console.log('allo')
       }
     }
   }

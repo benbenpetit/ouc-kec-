@@ -49,6 +49,7 @@ const Direction: FC<Props> = ({
           <SelectableCard
             key={city.id}
             city={city}
+            disabled={city.isStatic}
             isContestable={isClickable(city)}
             onClick={() => isClickable(city) && onClickCard(city)}
           />
