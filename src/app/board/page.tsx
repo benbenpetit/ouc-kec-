@@ -103,6 +103,7 @@ const BoardPage = () => {
   const [contestedCard, setContestedCard] = useState<ICityFull | null>(null)
   const [isContestValid, setIsContestValid] = useState(false)
   const [isEndRoundModal, setIsEndRoundModal] = useState(false)
+  const [isFlipCards, setIsFlipCards] = useState(false)
   const [invalidCities, setInvalidCities] = useState(0)
 
   useEffect(() => {
@@ -325,7 +326,6 @@ const BoardPage = () => {
     }, 0)
 
     setInvalidCities(invalidCities)
-    setPlacedCards((cards) => cards.map((c) => ({ ...c, isFlipped: true })))
   }
 
   const handleContestClick = (incCard: ICityFull) => {
@@ -340,9 +340,9 @@ const BoardPage = () => {
           : 'y'
 
       const sortedCards = [
-        ...placedCards.filter((c) => c.direction === 'left'),
+        ...placedCards.filter((c) => c.direction === 'left').reverse(),
         ...placedCards.filter((c) => c.direction === 'right'),
-        ...placedCards.filter((c) => c.direction === 'top'),
+        ...placedCards.filter((c) => c.direction === 'top').reverse(),
         ...placedCards.filter((c) => c.direction === 'bottom'),
       ]
 
@@ -389,9 +389,11 @@ const BoardPage = () => {
     switch (actionId) {
       case 'contest': {
         handleContest()
+        break
       }
       case 'end-round': {
         handleEndRound()
+        break
       }
       default:
         return false
@@ -518,6 +520,9 @@ const BoardPage = () => {
                     invalidCities={invalidCities}
                     onClick={() => {
                       setIsEndRoundModal(false)
+                      setPlacedCards((cards) =>
+                        cards.map((c) => ({ ...c, isFlipped: true }))
+                      )
                     }}
                   />
                 )}

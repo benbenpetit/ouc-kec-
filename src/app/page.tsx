@@ -1,5 +1,7 @@
+import { redirect } from 'next/navigation'
+
 const Home = () => {
-  return <main>Allo</main>
+  redirect('/board')
 }
 
 export default Home
