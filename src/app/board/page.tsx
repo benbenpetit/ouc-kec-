@@ -307,9 +307,9 @@ const BoardPage = () => {
   const handleEndRound = () => {
     setIsEndRoundModal(true)
     const sortedCards = [
-      ...placedCards.filter((c) => c.direction === 'left'),
+      ...placedCards.filter((c) => c.direction === 'left').reverse(),
       ...placedCards.filter((c) => c.direction === 'right'),
-      ...placedCards.filter((c) => c.direction === 'top'),
+      ...placedCards.filter((c) => c.direction === 'top').reverse(),
       ...placedCards.filter((c) => c.direction === 'bottom'),
     ]
 
