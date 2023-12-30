@@ -213,7 +213,7 @@ const BoardPage = () => {
       if (!isContestModal) {
         const delta = e.deltaY
         setZoom((prevZoom) =>
-          Math.max(Math.min(1.25, prevZoom - delta * 0.001), 0.6)
+          Math.max(Math.min(1.25, prevZoom - delta * 0.001), 0.4)
         )
       }
     }
@@ -409,6 +409,12 @@ const BoardPage = () => {
         onDragOver={onDragOver}
       >
         <div className="c-wrapper">
+          <span
+            className="c-wrapper__background"
+            style={{
+              backgroundSize: `${100 + Number(lerpZoom.toFixed(4)) * 10}%`,
+            }}
+          />
           <div className="c-wrapper__drag">
             <span
               className="c-wrapper__drag__pointer"

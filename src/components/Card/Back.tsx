@@ -7,6 +7,7 @@ import {
 } from 'react-simple-maps'
 import MAP from '@/core/data/constants/map'
 import { ICityFull } from '@/core/types/ICity'
+import { convertToDegrees } from '@/core/utils/coordinates'
 
 interface Props {
   city: ICityFull
@@ -34,9 +35,9 @@ const Back: FC<Props> = ({ city }) => {
       </div>
       <div className="c-back__coordinates">
         {city.direction === 'left' || city.direction === 'right' ? (
-          <span>Lat : {city.lat}</span>
+          <span>{convertToDegrees(city.lng, 'x')}</span>
         ) : (
-          <span>Lng : {city.lng}</span>
+          <span>{convertToDegrees(city.lat, 'y')}</span>
         )}
       </div>
     </div>

@@ -1,11 +1,30 @@
 .c-wrapper {
   min-height: 100vh;
-  background-color: rgb(255, 176, 80);
+
+  &__background {
+    position: absolute;
+    z-index: 0;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    display: block;
+    background: linear-gradient(
+        to bottom,
+        rgba(18, 42, 66, 0.65),
+        rgba(18, 42, 66, 0.65)
+      ),
+      url(../../assets/img/background.jpg);
+    background-position: center;
+    background-repeat: repeat;
+    background-size: 100%;
+  }
 
   &__drag {
     overflow: hidden;
     backface-visibility: hidden;
     position: absolute;
+    z-index: 1;
     z-index: 0;
     left: 0;
     top: 0;
