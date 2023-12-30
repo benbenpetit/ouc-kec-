@@ -204,13 +204,13 @@ const CITIES: ICity[] = [
   //   population: 6538000,
   //   country: 'India',
   // },
-  {
-    name: 'Prayagraj',
-    lat: 25.4358,
-    lng: 81.8464,
-    population: 5954391,
-    country: 'India',
-  },
+  // {
+  //   name: 'Prayagraj',
+  //   lat: 25.4358,
+  //   lng: 81.8464,
+  //   population: 5954391,
+  //   country: 'India',
+  // },
   {
     name: 'Guangzhou',
     lat: 23.13,
