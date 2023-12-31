@@ -304,28 +304,48 @@ const BoardPage = () => {
     }
   }
 
+  const countUnsortedValues = (arr: number[], axis: 'x' | 'y') => {
+    let unsortedCount = 0
+
+    for (let i = 1; i < arr.length; i++) {
+      for (let j = 0; j < i; j++) {
+        if (axis === 'x' ? arr[i] < arr[j] : arr[i] > arr[j]) {
+          unsortedCount++
+          break
+        }
+      }
+    }
+
+    return unsortedCount
+  }
+
   const handleEndRound = () => {
     setIsEndRoundModal(true)
-    const sortedCards = [
+
+    if (!startCity) return
+
+    const horizontalCards = [
       ...placedCards.filter((c) => c.direction === 'left').reverse(),
+      // startCity,
       ...placedCards.filter((c) => c.direction === 'right'),
-      ...placedCards.filter((c) => c.direction === 'top').reverse(),
-      ...placedCards.filter((c) => c.direction === 'bottom'),
     ]
 
-    const invalidCities = sortedCards.reduce((acc, card, index) => {
-      const nextCard = sortedCards[index + 1]
-      if (!nextCard) return acc
+    const verticalCards = [
+      ...placedCards.filter((c) => c.direction === 'top').reverse(),
+      // startCity,
+      ...placedCards.filter((c) => c.direction === 'bottom'),
+    ].filter((c) => c?.lat && c?.lng)
 
-      const axis =
-        card.direction === 'left' || card.direction === 'right' ? 'x' : 'y'
-      const isInOrder =
-        axis === 'x' ? card.lng < nextCard.lng : card.lat > nextCard.lat
+    const invalidHorizontalCities = countUnsortedValues(
+      horizontalCards.map((c) => c?.lng),
+      'x'
+    )
+    const invalidVerticalCities = countUnsortedValues(
+      verticalCards.map((c) => c?.lat),
+      'y'
+    )
 
-      return isInOrder ? acc + 1 : acc
-    }, 0)
-
-    setInvalidCities(invalidCities)
+    setInvalidCities(invalidHorizontalCities + invalidVerticalCities)
   }
 
   const handleContestClick = (incCard: ICityFull) => {

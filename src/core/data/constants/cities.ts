@@ -7421,13 +7421,13 @@ const CITIES: ICity[] = [
     population: 113737,
     country: 'Norway',
   },
-  {
-    name: 'Drammen',
-    lat: 59.7378,
-    lng: 10.205,
-    population: 109416,
-    country: 'Norway',
-  },
+  // {
+  //   name: 'Drammen',
+  //   lat: 59.7378,
+  //   lng: 10.205,
+  //   population: 109416,
+  //   country: 'Norway',
+  // },
   {
     name: 'Fredrikstad',
     lat: 59.2053,
