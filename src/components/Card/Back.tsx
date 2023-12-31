@@ -34,10 +34,11 @@ const Back: FC<Props> = ({ city }) => {
         </span>
       </div>
       <div className="c-back__coordinates">
-        {city.direction === 'left' || city.direction === 'right' ? (
-          <span>{convertToDegrees(city.lng, 'x')}</span>
-        ) : (
+        {city.direction !== 'left' && city.direction !== 'right' && (
           <span>{convertToDegrees(city.lat, 'y')}</span>
+        )}
+        {city.direction !== 'top' && city.direction !== 'bottom' && (
+          <span>{convertToDegrees(city.lng, 'x')}</span>
         )}
       </div>
     </div>

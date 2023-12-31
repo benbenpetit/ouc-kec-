@@ -104,8 +104,8 @@ const BoardPage = () => {
   const [contestedCard, setContestedCard] = useState<ICityFull | null>(null)
   const [isContestValid, setIsContestValid] = useState(false)
   const [isEndRoundModal, setIsEndRoundModal] = useState(false)
-  const [isFlipCards, setIsFlipCards] = useState(false)
   const [invalidCities, setInvalidCities] = useState(0)
+  const [isEndRound, setIsEndRound] = useState(false)
 
   useEffect(() => {
     if (round === MAX_ROUNDS) return
@@ -459,7 +459,13 @@ const BoardPage = () => {
               >
                 <div className="c-board__center">
                   <div className="c-board__center__card">
-                    {startCity && <Card city={startCity} />}
+                    {startCity && (
+                      <Card
+                        city={startCity}
+                        fullCity={{ ...startCity, id: 'startCity' }}
+                        isFlipped={isEndRound}
+                      />
+                    )}
                   </div>
                   <SortableContext items={directionsIds}>
                     {directions.map((direction) => (
@@ -547,6 +553,7 @@ const BoardPage = () => {
                     invalidCities={invalidCities}
                     onClick={() => {
                       setIsEndRoundModal(false)
+                      setIsEndRound(true)
                       setPlacedCards((cards) =>
                         cards.map((c) => ({ ...c, isFlipped: true }))
                       )
