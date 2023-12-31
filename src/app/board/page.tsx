@@ -27,6 +27,7 @@ import clsx from 'clsx'
 import Contest from '@/components/Contest/Contest'
 import { AnimatePresence } from 'framer-motion'
 import EndRound from '@/components/EndRound/EndRound'
+import shuffle from 'lodash.shuffle'
 
 const MAX_ROUNDS = 3
 
@@ -112,7 +113,7 @@ const BoardPage = () => {
   }, [deck, round])
 
   useEffect(() => {
-    const shuffledCities = CITIES.sort(() => 0.5 - Math.random())
+    const shuffledCities = shuffle(CITIES)
       .slice(0, 46)
       .map((city) => ({
         ...city,
@@ -326,13 +327,13 @@ const BoardPage = () => {
 
     const horizontalCards = [
       ...placedCards.filter((c) => c.direction === 'left').reverse(),
-      // startCity,
+      startCity,
       ...placedCards.filter((c) => c.direction === 'right'),
     ]
 
     const verticalCards = [
       ...placedCards.filter((c) => c.direction === 'top').reverse(),
-      // startCity,
+      startCity,
       ...placedCards.filter((c) => c.direction === 'bottom'),
     ].filter((c) => c?.lat && c?.lng)
 
