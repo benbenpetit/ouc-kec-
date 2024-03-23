@@ -309,11 +309,8 @@ const BoardPage = () => {
     let unsortedCount = 0
 
     for (let i = 1; i < arr.length; i++) {
-      for (let j = 0; j < i; j++) {
-        if (axis === 'x' ? arr[i] < arr[j] : arr[i] > arr[j]) {
-          unsortedCount++
-          break
-        }
+      if (axis === 'x' ? arr[i] < arr[i - 1] : arr[i] > arr[i - 1]) {
+        unsortedCount++
       }
     }
 
